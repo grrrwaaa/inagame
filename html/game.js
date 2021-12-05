@@ -75,25 +75,25 @@ let ghostgirl = {
   height: 125,
   movex: 0,
   movey: 0,
-  frame: 0,
+  time: 0,
   sleep: 1,
 
-  animate() {
-    this.frame = this.frame + 1;
+  animate(dt) {
+    this.time = this.time + dt;
 
-    if (this.frame > 1000) {
+    if (this.time > 17) {
       this.sleep = 1;
     }
     if (this.sleep && this.movex) {
       this.sleep = 0;
-      this.frame = 0;
+      this.time = 0;
     }
 
     // gravity:
-    this.movey = this.movey - 0.1;
+    this.movey = this.movey - dt * 1000;
 
-    this.x = this.x + this.movex;
-    this.y = this.y + this.movey;
+    this.x = this.x + dt * this.movex;
+    this.y = this.y + dt * this.movey;
 
     // wrap:
     //if (this.y)
@@ -104,7 +104,7 @@ let ghostgirl = {
       this.movey = this.movey * -0.25;
       // bounce if we are walking
       if (this.movex != 0) {
-        this.movey = 1;
+        this.movey = 150;
       }
     }
   },
@@ -119,20 +119,20 @@ let ghostgirl = {
     if (this.sleep) {
       img = images.blink;
     } else if (this.movex != 0) {
-      let which = this.frame % 40 < 20;
+      let which = (this.time % 0.5) < 0.25;
       if (which) {
         img = images.walk2;
       } else {
         img = images.walk1;
       }
-    } else if (this.frame % 400 < 30) {
+    } else if ((this.time % 5) < 0.5) {
       img = images.blink;
     }
     if (this.movex < 0) {
       scalex = -1;
     }
     ctx.scale(scalex, -1);
-    let hover = 3 * Math.sin(this.frame / 30);
+    let hover = 3 * Math.sin(this.time * 3);
     if (this.sleep) {
       ctx.rotate(-Math.PI / 2);
       ctx.drawImage(
@@ -150,7 +150,9 @@ let ghostgirl = {
   }
 };
 
-function draw() {
+let t0 = 0
+function animate(t) {
+  let dt = (t-t0)*0.001; // secondsg
   let width = window.innerWidth,
     height = window.innerHeight;
   ctx.canvas.width = width;
@@ -161,25 +163,26 @@ function draw() {
 
   // ctx.filter = `blur(1px)`;
 
-  ghostgirl.animate();
+  ghostgirl.animate(dt);
 
   for (let tree of trees) {
     tree.draw(ctx);
   }
   ghostgirl.draw(ctx);
 
-  requestAnimationFrame(draw);
+  t0=t
+  requestAnimationFrame(animate);
 }
 
 document.onkeydown = function (event) {
   if (event.key == "ArrowRight") {
-    ghostgirl.movex = 1;
+    ghostgirl.movex = 100;
   } else if (event.key == "ArrowLeft") {
-    ghostgirl.movex = -1;
+    ghostgirl.movex = -100;
   } else if (event.key == " ") {
-    ghostgirl.frame = 0;
+    ghostgirl.time = 0;
     ghostgirl.sleep = 0;
-    ghostgirl.movey = 4;
+    ghostgirl.movey = 400;
   }
 };
 
@@ -191,5 +194,5 @@ document.onkeyup = function (event) {
   }
 };
 
-draw();
+animate(t0);
 
