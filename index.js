@@ -12,7 +12,7 @@ const IS_HEROKU = (process.env._ && process.env._.indexOf("heroku") !== -1);
 // what port should this server be accessed on?
 const PORT = process.env.PORT || 3000
 // where static HTML etc. files are found
-const PUBLIC_PATH = path.join(__dirname, "public")
+const PUBLIC_PATH = path.join(__dirname, "html")
 
 // create an Express app:
 const app = express();
