@@ -25,6 +25,15 @@ const images = {
   dumpling: document.getElementById("dumpling")
 };
 
+function avatar_draw(avatar) {
+  ctx.save();
+  ctx.translate(avatar.x, avatar.y);
+  let img = images[avatar.img];
+  ctx.scale(scalex, -1);
+  ctx.drawImage(img, -avatar.width / 2, 0, Math.abs(avatar.width), -avatar.height);
+  ctx.restore();
+}
+
 class Tree {
   x = 200;
   y = 0;
@@ -68,6 +77,12 @@ for (let i = 0; i < 50; i++) {
   trees.push(new Tree(300 + i * 200 + Math.random() * 100));
 }
 
+let friends = [];
+
+socket.socket.onmessage = function(e) {
+  friends = JSON.parse(e.data)
+}
+
 let ghostgirl = {
   x: 100,
   y: 0,
@@ -77,6 +92,7 @@ let ghostgirl = {
   movey: 0,
   time: 0,
   sleep: 1,
+  img: "idle",
 
   animate(dt) {
     this.time = this.time + dt;
@@ -114,19 +130,20 @@ let ghostgirl = {
     ctx.translate(this.x, this.y);
     ctx.save();
     //ctx.fillRect(0, 0, ghostgirl.width, ghostgirl.height)
-    let img = images.idle;
     let scalex = 1;
     if (this.sleep || this.movey > 200) {
-      img = images.blink;
+      this.img = "blink"
     } else if (this.movex != 0) {
       let which = (this.time % 0.5) < 0.25;
       if (which) {
-        img = images.walk2;
+        this.img = "walk1"
       } else {
-        img = images.walk1;
+        this.img = "walk2"
       }
     } else if ((this.time % 5) < 0.5) {
-      img = images.blink;
+      this.img = "blink"
+    } else {
+      this.img = "idle"
     }
     if (this.movex < 0) {
       scalex = -1;
@@ -136,14 +153,14 @@ let ghostgirl = {
     if (this.sleep) {
       ctx.rotate(-Math.PI / 2);
       ctx.drawImage(
-        img,
+        images[this.img],
         hover + this.width / 4,
         this.height / 2,
         this.width,
         -this.height
       );
     } else {
-      ctx.drawImage(img, -this.width / 2, hover, this.width, -this.height);
+      ctx.drawImage(images[this.img], -this.width / 2, hover, this.width, -this.height);
     }
     ctx.restore();
     ctx.restore();
@@ -168,7 +185,25 @@ function animate(t) {
   for (let tree of trees) {
     tree.draw(ctx);
   }
+  for (let avatar of friends) {
+    ctx.save();
+    ctx.translate(avatar.x, avatar.y);
+    let img = images[avatar.img];
+    ctx.scale(Math.sign(avatar.width), -1);
+    ctx.drawImage(img, -avatar.width / 2, 0, Math.abs(avatar.width), -avatar.height);
+    ctx.restore();
+  }
+
   ghostgirl.draw(ctx);
+
+  // send my state:
+  socket.send({
+    x: ghostgirl.x,
+    y: ghostgirl.y,
+    width: ghostgirl.width * (ghostgirl.movex < 0 ? -1 : 1),
+    height: ghostgirl.height,
+    img: ghostgirl.img
+  })
 
   t0=t
   requestAnimationFrame(animate);

@@ -62,7 +62,7 @@ class Socket {
     }
 
     send(obj) {
-        if (!this.socket) return;
+        if (!this.socket || this.socket.readyState != 1) return;
         this.socket.send(JSON.stringify(obj));
     }
 };

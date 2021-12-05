@@ -38,11 +38,23 @@ const wss = new ws.Server({ server });
 // handle websocket connections and events from clients:
 wss.on('connection', (socket, req) => {
 	console.log("received a new websocket connection to", req.url)
+
 	
-	socket.on('message', (msg) => {
-		console.log(msg)
+	
+	socket.on('message', (e) => {
+		let msg = e.toString()
+		if (msg.charAt(0) == "{") {
+			socket.avatar = JSON.parse(msg)
+			// send back positions of all friends
+			let friends = []
+			wss.clients.forEach(function each(client) {
+				if (client == socket || !client.avatar) return;
+				friends.push(client.avatar)
+			});
+			socket.send(JSON.stringify(friends))
+		}
 		// send it back:
-		socket.send(msg)
+		//socket.send(msg)
 	});
 
 	socket.on('error', (err) => {
