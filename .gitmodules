@@ -1,4 +1,0 @@
-[submodule "public"]
-	path = public
-	url = git@github.com:grrrwaaa/inagame.git
-	branch = gh-pages
