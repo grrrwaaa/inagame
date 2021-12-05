@@ -7,6 +7,7 @@ if (window.location.hostname == "localhost") {
   socket = new Socket()
 } else {
   socket = new Socket({
+    transport: "wss",
     hostname: "inagame.herokuapp.com"
   })
 }
