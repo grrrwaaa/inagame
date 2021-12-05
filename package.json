@@ -1,0 +1,23 @@
+{
+  "name": "inagame",
+  "version": "1.0.0",
+  "description": "Holding pattern",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grrrwaaa/inagame.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/grrrwaaa/inagame/issues"
+  },
+  "homepage": "https://github.com/grrrwaaa/inagame#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "ws": "^8.3.0"
+  }
+}
