@@ -116,7 +116,7 @@ let ghostgirl = {
     //ctx.fillRect(0, 0, ghostgirl.width, ghostgirl.height)
     let img = images.idle;
     let scalex = 1;
-    if (this.sleep) {
+    if (this.sleep || this.movey > 200) {
       img = images.blink;
     } else if (this.movex != 0) {
       let which = (this.time % 0.5) < 0.25;
@@ -158,7 +158,7 @@ function animate(t) {
   ctx.canvas.width = width;
   ctx.canvas.height = height;
   // coordinate system:
-  ctx.translate(width / 2 - ghostgirl.x, height);
+  ctx.translate(width / 2 - ghostgirl.x, height * 0.75);
   ctx.scale(1, -1);
 
   // ctx.filter = `blur(1px)`;
@@ -176,13 +176,13 @@ function animate(t) {
 
 document.onkeydown = function (event) {
   if (event.key == "ArrowRight") {
-    ghostgirl.movex = 100;
+    ghostgirl.movex = 200;
   } else if (event.key == "ArrowLeft") {
-    ghostgirl.movex = -100;
+    ghostgirl.movex = -200;
   } else if (event.key == " ") {
     ghostgirl.time = 0;
     ghostgirl.sleep = 0;
-    ghostgirl.movey = 400;
+    ghostgirl.movey = 500;
   }
 };
 
