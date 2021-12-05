@@ -2,6 +2,15 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 ctx.imageSmoothingQuality = "high";
 
+let socket
+if (window.location.hostname == "localhost") {
+  socket = new Socket()
+} else {
+  socket = new Socket({
+    hostname: "inagame.herokuapp.com"
+  })
+}
+
 const images = {
   idle: document.getElementById("girl-idle"),
   blink: document.getElementById("girl-blink"),
@@ -169,6 +178,7 @@ document.onkeydown = function (event) {
     ghostgirl.movex = -1;
   } else if (event.key == " ") {
     ghostgirl.frame = 0;
+    ghostgirl.sleep = 0;
     ghostgirl.movey = 4;
   }
 };
